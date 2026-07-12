@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>アンサー推測クイズ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="アンサー推測クイズ">
+    <meta property="og:description" content="メンバーの回答を推測して並べ替えよう！">
+    <meta property="og:image" content="https://drive.google.com/thumbnail?id=1rC2byTUCZSHyE8zj__BFZUlRXrJ9kh_9&sz=w1000">
+    <meta name="twitter:card" content="summary_large_image">
+    <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
+    
+    <style>
+      :root {
+        --color-yuino: #2e97fe;
+        --color-soera: #ff3c5c;
+        --color-niasu: #26D167;
+        --color-ruuya: #ffca26;
+        --color-bg: #fff9f0;
+        --color-text: #554433;
+      }
+
+      body { margin: 0; padding: 0; font-family: 'Kosugi Maru', sans-serif; background-color: var(--color-bg); color: var(--color-text); display: flex; justify-content: center; overflow-x: hidden; }
+      #game-container { width: 100%; max-width: 900px; min-height: 100vh; position: relative; margin: 0 auto; }
+      .screen { display: none; width: 100%; min-height: 100vh; padding: 15px; box-sizing: border-box; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+      .screen.active { display: flex; }
+
+      .main-title-logo { width: 95%; max-width: 600px; height: auto; margin-bottom: 20px; }
+      .character-lineup { display: flex; gap: 10px; margin-bottom: 30px; }
+
+      .rule-box { font-size: 1.2rem; line-height: 1.8; background: #fff; padding: 20px; border-radius: 15px; border: 2px solid #f8bbd0; margin-bottom: 25px; width: 95%; max-width: 700px; box-sizing: border-box; box-shadow: 0 4px 0 #fce4ec; }
+      .rule-box ruby { ruby-position: over; ruby-align: center; margin: 0 2px; }
+      .rule-box .ruby-8 { margin: 0; }
+
+      .section-title { font-size: 1.8rem; margin-bottom: 15px; }
+      .final-title { font-size: 2.2rem; margin-bottom: 15px; color: #e91e63; }
+
+      .btn-main { background: #e91e63; color: white; border: none; padding: 15px 40px; font-size: 1.2rem; border-radius: 50px; cursor: pointer; box-shadow: 0 6px 0 #c2185b; transition: all 0.1s; font-family: inherit; margin-top: 15px; }
+      .btn-play { font-size: 1.5rem; padding: 20px 60px; }
+      .btn-main:active { transform: translateY(4px); box-shadow: 0 2px 0 #c2185b; }
+      .btn-main.disabled { background: #ccc; box-shadow: 0 6px 0 #999; pointer-events: none; }
+      .btn-x { background: #000; color: white; border-radius: 50px; padding: 12px 24px; margin-top: 10px; border: none; cursor: pointer; font-size: 1.1rem; }
+
+      .quiz-header { width: 100%; background: #fff; padding: 15px; border-radius: 20px; border: 3px solid #f8bbd0; margin-bottom: 15px; box-sizing: border-box; }
+      #quiz-number { display: block; font-weight: bold; color: #e91e63; margin-bottom: 5px; }
+      #question-text { font-size: 1.1rem; font-weight: bold; }
+
+      .drop-area, .answer-pool { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; width: 100%; margin-bottom: 25px; }
+      .member-column { display: flex; flex-direction: column; align-items: center; position: relative; }
+      .member-icon { width: 50px; height: 50px; border-radius: 50%; background-size: cover; background-position: center; border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+      .yuino { background-image: url('https://drive.google.com/thumbnail?id=1RlBdz1ettyfon8lFjMn3w_I0ZorA11dh&sz=w200'); background-color: var(--color-yuino); }
+      .soera { background-image: url('https://drive.google.com/thumbnail?id=1Wr7o3-quTE2wz4nfT2PxTncAAwNYx-wz&sz=w200'); background-color: var(--color-soera); }
+      .niasu { background-image: url('https://drive.google.com/thumbnail?id=18ZpK3ycsvLv6Wjk68N3xV91afeJnv3vd&sz=w200'); background-color: var(--color-niasu); }
+      .ruuya { background-image: url('https://drive.google.com/thumbnail?id=11PRlk0xPLxQOiILzz3jNFWB7lWdg6EEt&sz=w200'); background-color: var(--color-ruuya); }
+      .member-name { font-size: 0.7rem; font-weight: bold; margin: 5px 0; }
+
+      .cell-container { width: 100%; height: 90px; border-radius: 10px; cursor: pointer; position: relative; box-sizing: border-box; transition: transform 0.1s; }
+      .cell-container.selected-cell { outline: 4px solid #e91e63; transform: scale(1.05); z-index: 2; }
+      .empty-slot { width: 100%; height: 100%; background: #eee; border: 2px dashed #ccc; border-radius: 10px; box-sizing: border-box; }
+      .answer-card { width: 100%; height: 100%; background: #fff; border: 2px solid #ddd; border-radius: 10px; padding: 5px; font-size: 0.95rem; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 0 #ccc; box-sizing: border-box; user-select: none; word-break: break-all; overflow: hidden; white-space: pre-wrap; }
+
+      .mark-area {
+        position: absolute; top: 0; right: 0; transform: translate(0%, -55%);
+        font-size: 4rem; font-weight: 900; font-family: 'Arial Black', sans-serif; z-index: 10;
+        text-shadow: 4px 4px 0 #fff, -4px 4px 0 #fff, 4px -4px 0 #fff, -4px -4px 0 #fff, 0 4px 0 #fff, 0 -4px 0 #fff, 4px 0 0 #fff, -4px 0 0 #fff;
+      }
+      .mark-correct { color: #f44336; -webkit-text-stroke: 8px #f44336; }
+      .mark-incorrect { color: #2196f3; font-size: 3.5rem; -webkit-text-stroke: 5px #2196f3; }
+
+      .correct-label { background: #fce4ec; color: #c2185b; font-size: 0.9rem; font-weight: bold; padding: 4px 8px; border-radius: 5px; margin-top: 8px; word-break: break-all; white-space: pre-wrap; line-height: 1.3; }
+      
+      .judgement-title { font-size: 2rem; color: #e91e63; margin-bottom: 40px; }
+
+      .score-box { margin: 20px 0; letter-spacing: -2px; }
+      .score-main { font-size: 5rem; font-weight: bold; color: #ff0000; text-shadow: 3px 3px 0 #fff, -3px 3px 0 #fff, 3px -3px 0 #fff, -3px -3px 0 #fff, 5px 5px 0px #000; }
+      .score-sub { font-size: 1.5rem; font-weight: bold; color: #554433; }
+
+      .final-comment { font-size: 1.2rem; font-weight: bold; line-height: 1.5; margin-bottom: 20px; padding: 0 10px; }
+      .final-comment ruby { ruby-position: over; }
+      .final-buttons { display: flex; flex-direction: column; align-items: center; }
+      .hint-text { font-size: 0.85rem; color: #c2185b; margin-top: 8px; margin-bottom: 15px; font-weight: bold; }
+
+      @media (min-width: 768px) {
+        .main-title-logo { max-width: 800px; }
+        .rule-box { font-size: 1.6rem; padding: 40px; line-height: 2; }
+        .final-title { font-size: 2.8rem; }
+        .quiz-header { padding: 25px; }
+        #question-text { font-size: 1.4rem; }
+        .member-icon { width: 70px; height: 70px; }
+        .member-name { font-size: 0.9rem; }
+        .cell-container { height: 130px; }
+        .answer-card { font-size: 1.2rem; padding: 10px; }
+        .drop-area, .answer-pool { gap: 15px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container">
+      
+      <div id="screen-title" class="screen active">
+        <img src="https://drive.google.com/thumbnail?id=1rC2byTUCZSHyE8zj__BFZUlRXrJ9kh_9&sz=w1000" class="main-title-logo" alt="アンサー推測クイズ">
+        <div class="character-lineup">
+          <div class="ch-mini yuino"></div>
+          <div class="ch-mini soera"></div>
+          <div class="ch-mini niasu"></div>
+          <div class="ch-mini ruuya"></div>
+        </div>
+        <button id="btn-start-loading" class="btn-main btn-play disabled">データ読み込み中...</button>
+      </div>
+
+      <div id="screen-rule" class="screen">
+        <h2 class="section-title">ルールせつめい</h2>
+        <div class="rule-box">
+          メンバーに出された質問への回答が<br>
+          バラバラに表示されるよ！<br>
+          「誰がどの回答をしたか」を正しく並び替えてね。<br><br>
+          全部で４問！全問正解で“<ruby class="ruby-8">８点<rt>（８周年だから）</rt></ruby>”目指そう！<br>
+          問題は入れ替わるので何度でも挑戦してね！
+        </div>
+        <button class="btn-main" onclick="startGame()">ゲームスタート！</button>
+      </div>
+
+      <div id="screen-quiz" class="screen">
+        <div class="quiz-header">
+          <span id="quiz-number">第 1 問</span>
+          <div id="question-text">お題がここに入ります</div>
+        </div>
+
+        <div class="drop-area">
+          <div class="member-column" data-member="yuino">
+            <div class="member-icon yuino"></div>
+            <div class="member-name">ゆいの</div>
+            <div id="cell-0" class="cell-container"></div>
+          </div>
+          <div class="member-column" data-member="soera">
+            <div class="member-icon soera"></div>
+            <div class="member-name">ソエラ</div>
+            <div id="cell-1" class="cell-container"></div>
+          </div>
+          <div class="member-column" data-member="niasu">
+            <div class="member-icon niasu"></div>
+            <div class="member-name">にあす</div>
+            <div id="cell-2" class="cell-container"></div>
+          </div>
+          <div class="member-column" data-member="ruuya">
+            <div class="member-icon ruuya"></div>
+            <div class="member-name">ルウヤ</div>
+            <div id="cell-3" class="cell-container"></div>
+          </div>
+        </div>
+
+        <div class="answer-pool-label">回答（タップして入れ替え）</div>
+        <div id="answer-pool" class="answer-pool">
+          <div id="cell-4" class="cell-container"></div>
+          <div id="cell-5" class="cell-container"></div>
+          <div id="cell-6" class="cell-container"></div>
+          <div id="cell-7" class="cell-container"></div>
+        </div>
+
+        <button id="btn-confirm" class="btn-main disabled" onclick="confirmAnswer()">決定！</button>
+      </div>
+
+      <div id="screen-result-detail" class="screen">
+        <h2 id="judgement-text" class="judgement-title">正解！</h2>
+        <div id="result-display-area" class="drop-area">
+           </div>
+        <button id="btn-next" class="btn-main" onclick="nextQuestion()">つぎへ</button>
+      </div>
+
+      <div id="screen-final" class="screen">
+        <h2 class="section-title final-title">【最終結果】</h2>
+        <div class="score-box">
+          <span class="score-main"><span id="final-score">0</span>点</span>
+          <span class="score-sub">/ 8点</span>
+        </div>
+        <div class="final-comment" id="final-comment"></div>
+        
+        <div class="final-buttons">
+          <button class="btn-main" onclick="resetGame()">もういちど遊ぶ</button>
+          <div id="replay-hint" class="hint-text"></div>
+          <button class="btn-x" onclick="shareX()">Xにポストする</button>
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      // ==========================================
+      // ★ここにGASのURLを貼り付けてください★
+      // ==========================================
+      const GAS_URL = 'https://script.google.com/macros/s/AKfycbxweLFJbVTPuP1EaQVx8sjwJJ4dJDH7HH4kdOr5U_zUiaRnwgRALusVFvlqIwyZbu8k/exec';
+      
+      let allQuizData = [];
+      let currentQuestionIndex = 0;
+      let score = 0;
+      let selectedQuizSet = [];
+      let usedQuestions = [];
+      let cells = new Array(8).fill(null);
+      let selectedCellIndex = -1;
+      const members = ['yuino', 'soera', 'niasu', 'ruuya'];
+
+      // ページ読み込み時にGASからデータを取得する
+      window.onload = async function() {
+        const btn = document.getElementById('btn-start-loading');
+        try {
+          // ?mode=api を付けてアクセスし、JSONデータを受け取る
+          const response = await fetch(GAS_URL + '?mode=api');
+          allQuizData = await response.json();
+          
+          // 読み込み完了したらボタンを押せるようにする
+          btn.innerText = 'あそぶ！';
+          btn.classList.remove('disabled');
+          btn.onclick = () => showScreen('screen-rule');
+        } catch (error) {
+          btn.innerText = 'エラー：URLを確認してください';
+          console.error('データ取得エラー:', error);
+        }
+      };
+
+      function formatScore(num) {
+        let str = String(num);
+        if (str.includes('.')) {
+          let [integer, decimal] = str.split('.');
+          return toFullWidth(integer) + '.' + toFullWidth(decimal);
+        }
+        return toFullWidth(str);
+      }
+
+      function toFullWidth(str) {
+        return str.replace(/[0-9]/g, function(s) {
+          return String.fromCharCode(s.charCodeAt(0) + 0xFEE0);
+        });
+      }
+
+      function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+      }
+
+      function startGame() {
+        score = 0;
+        currentQuestionIndex = 0;
+        let unusedIndices = [];
+        for (let i = 0; i < allQuizData.length; i++) {
+          if (!usedQuestions.includes(i)) unusedIndices.push(i);
+        }
+        unusedIndices.sort(() => Math.random() - 0.5);
+        let selectedIndices = [];
+        if (unusedIndices.length >= 4) {
+          selectedIndices = unusedIndices.slice(0, 4);
+        } else {
+          selectedIndices = [...unusedIndices];
+          let usedIndices = [...usedQuestions].sort(() => Math.random() - 0.5);
+          selectedIndices = selectedIndices.concat(usedIndices.slice(0, 4 - selectedIndices.length));
+        }
+        selectedIndices.forEach(idx => {
+          if (!usedQuestions.includes(idx)) usedQuestions.push(idx);
+        });
+        selectedQuizSet = selectedIndices.map(idx => allQuizData[idx]);
+        loadQuestion();
+        showScreen('screen-quiz');
+      }
+
+      function loadQuestion() {
+        const quiz = selectedQuizSet[currentQuestionIndex];
+        document.getElementById('quiz-number').innerText = `第 ${currentQuestionIndex + 1} 問`;
+        document.getElementById('question-text').innerText = quiz.question;
+        const answers = [quiz.answers.yuino, quiz.answers.soera, quiz.answers.niasu, quiz.answers.ruuya];
+        answers.sort(() => Math.random() - 0.5);
+        cells = [null, null, null, null, answers[0], answers[1], answers[2], answers[3]];
+        selectedCellIndex = -1;
+        renderCells();
+        checkConfirmButton();
+      }
+
+      function renderCells() {
+        for(let i = 0; i < 8; i++) {
+          const el = document.getElementById(`cell-${i}`);
+          el.innerHTML = '';
+          el.className = 'cell-container';
+          if (i === selectedCellIndex) el.classList.add('selected-cell');
+          if (cells[i] !== null) {
+            el.innerHTML = `<div class="answer-card">${cells[i]}</div>`;
+          } else {
+            el.innerHTML = `<div class="empty-slot"></div>`;
+          }
+          el.onclick = () => handleCellClick(i);
+        }
+      }
+
+      function handleCellClick(index) {
+        if (selectedCellIndex === -1) {
+          if (cells[index] === null) return;
+          selectedCellIndex = index;
+        } else {
+          if (selectedCellIndex === index) {
+            selectedCellIndex = -1;
+          } else {
+            const temp = cells[selectedCellIndex];
+            cells[selectedCellIndex] = cells[index];
+            cells[index] = temp;
+            selectedCellIndex = -1;
+          }
+        }
+        renderCells();
+        checkConfirmButton();
+      }
+
+      function checkConfirmButton() {
+        const isReady = (cells[0] !== null && cells[1] !== null && cells[2] !== null && cells[3] !== null);
+        const btn = document.getElementById('btn-confirm');
+        if (isReady) btn.classList.remove('disabled'); else btn.classList.add('disabled');
+      }
+
+      function confirmAnswer() {
+        const btn = document.getElementById('btn-confirm');
+        if (btn.classList.contains('disabled')) return;
+        const quiz = selectedQuizSet[currentQuestionIndex];
+        let roundCorrectCount = 0;
+        const resultsArea = document.getElementById('result-display-area');
+        resultsArea.innerHTML = '';
+        members.forEach((m, idx) => {
+          const userAnsText = cells[idx];
+          const correctAnsText = quiz.answers[m];
+          const isCorrect = (userAnsText === correctAnsText);
+          if (isCorrect) roundCorrectCount++;
+          const slot = document.createElement('div');
+          slot.className = 'member-column';
+          slot.style.position = 'relative';
+          slot.innerHTML = `
+            <div class="member-icon ${m}"></div>
+            <div class="member-name">${getName(m)}</div>
+            <div class="cell-container" style="pointer-events:none;">
+              <div class="answer-card" style="box-shadow:none;">${userAnsText}</div>
+            </div>
+            <div class="mark-area ${isCorrect ? 'mark-correct' : 'mark-incorrect'}">
+              ${isCorrect ? '○' : '×'}
+            </div>
+            ${!isCorrect ? `<div class="correct-label">正解：\n${correctAnsText}</div>` : ''}
+          `;
+          resultsArea.appendChild(slot);
+        });
+        let judgeText = roundCorrectCount === 4 ? "せいかい！！" : roundCorrectCount === 0 ? "ざんねん！！ ぽくなかったですか！？" : `おしい！${roundCorrectCount}箇所せいかい！`;
+        document.getElementById('judgement-text').innerText = judgeText;
+        score += (roundCorrectCount * 0.5);
+        showScreen('screen-result-detail');
+      }
+
+      function getName(key) {
+        const names = {yuino: 'ゆいの', soera: 'ソエラ', niasu: 'にあす', ruuya: 'ルウヤ'};
+        return names[key];
+      }
+
+      function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < 4) {
+          loadQuestion();
+          showScreen('screen-quiz');
+        } else {
+          showFinalResult();
+        }
+      }
+
+      function showFinalResult() {
+        document.getElementById('final-score').innerText = formatScore(score);
+        let comment = "";
+        if (score === 8) comment = "すごすぎる！！ <ruby>彩虹色調<rt>テトラクロマシー</rt></ruby>の造詣が深すぎます…！！";
+        else if (score >= 7) comment = "すごい！！<ruby>彩虹色調<rt>テトラクロマシー</rt></ruby>をよくわかってます！";
+        else if (score >= 4) comment = "まあまあ理解できていますね！！でも再チャレンジしてほしい！";
+        else comment = "メンバーのイメージと違いすぎましたかね？（笑）次はもっといい点数が取れるかも？！";
+        document.getElementById('final-comment').innerHTML = comment;
+        let hintText = usedQuestions.length < allQuizData.length ? "／まだ見てない問題があるよ！＼" : (score === 8 ? "／問題はすべて見ました！＼" : "／問題はすべて見ました！つぎは満点かも？＼");
+        document.getElementById('replay-hint').innerText = hintText;
+        showScreen('screen-final');
+      }
+
+      function shareX() {
+        const text = encodeURIComponent(`彩虹色調（テトラクロマシー）の8周年記念！\nアンサー推測クイズで【${score}/8点】を獲得しました！\n\n#彩虹色調８周年\n${window.location.href}`);
+        const url = `https://twitter.com/intent/tweet?text=${text}`;
+        window.open(url, '_blank');
+      }
+
+      function resetGame() {
+        showScreen('screen-rule');
+      }
+    </script>
+  </body>
+</html>
