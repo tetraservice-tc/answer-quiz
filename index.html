@@ -25,6 +25,9 @@
       .screen { display: none; width: 100%; min-height: 100vh; padding: 15px; box-sizing: border-box; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
       .screen.active { display: flex; }
 
+      /* スマホ版：お題とマスを上側に寄せてスペースを確保 */
+      #screen-quiz, #screen-result-detail { justify-content: flex-start; padding-top: 5px; }
+
       .main-title-logo { width: 95%; max-width: 600px; height: auto; margin-bottom: 20px; }
       .character-lineup { display: flex; gap: 10px; margin-bottom: 30px; }
 
@@ -41,33 +44,41 @@
       .btn-main.disabled { background: #ccc; box-shadow: 0 6px 0 #999; pointer-events: none; }
       .btn-x { background: #000; color: white; border-radius: 50px; padding: 12px 24px; margin-top: 10px; border: none; cursor: pointer; font-size: 1.1rem; }
 
-      .quiz-header { width: 100%; background: #fff; padding: 15px; border-radius: 20px; border: 3px solid #f8bbd0; margin-bottom: 15px; box-sizing: border-box; }
-      #quiz-number { display: block; font-weight: bold; color: #e91e63; margin-bottom: 5px; }
+      .quiz-header { width: 100%; background: #fff; padding: 12px; border-radius: 20px; border: 3px solid #f8bbd0; margin-bottom: 15px; box-sizing: border-box; }
+      #quiz-number { display: block; font-weight: bold; color: #e91e63; margin-bottom: 3px; }
       #question-text { font-size: 1.1rem; font-weight: bold; }
 
-      .drop-area, .answer-pool { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; width: 100%; margin-bottom: 25px; }
-      .member-column { display: flex; flex-direction: column; align-items: center; position: relative; }
+      /* スマホ版：縦2×横2（2列）にして横幅を広げる */
+      .drop-area, .answer-pool { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; margin-bottom: 20px; }
+      .member-column { display: flex; flex-direction: column; align-items: center; position: relative; width: 100%; }
       .member-icon { width: 50px; height: 50px; border-radius: 50%; background-size: cover; background-position: center; border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
       .yuino { background-image: url('https://drive.google.com/thumbnail?id=1RlBdz1ettyfon8lFjMn3w_I0ZorA11dh&sz=w200'); background-color: var(--color-yuino); }
       .soera { background-image: url('https://drive.google.com/thumbnail?id=1Wr7o3-quTE2wz4nfT2PxTncAAwNYx-wz&sz=w200'); background-color: var(--color-soera); }
       .niasu { background-image: url('https://drive.google.com/thumbnail?id=18ZpK3ycsvLv6Wjk68N3xV91afeJnv3vd&sz=w200'); background-color: var(--color-niasu); }
       .ruuya { background-image: url('https://drive.google.com/thumbnail?id=11PRlk0xPLxQOiILzz3jNFWB7lWdg6EEt&sz=w200'); background-color: var(--color-ruuya); }
-      .member-name { font-size: 0.7rem; font-weight: bold; margin: 5px 0; }
+      .member-name { font-size: 0.75rem; font-weight: bold; margin: 3px 0; }
 
-      .cell-container { width: 100%; height: 90px; border-radius: 10px; cursor: pointer; position: relative; box-sizing: border-box; transition: transform 0.1s; }
+      /* スマホ版：マスの高さを少し広げる（110px） */
+      .cell-container { width: 100%; height: 110px; border-radius: 10px; cursor: pointer; position: relative; box-sizing: border-box; transition: transform 0.1s; }
       .cell-container.selected-cell { outline: 4px solid #e91e63; transform: scale(1.05); z-index: 2; }
       .empty-slot { width: 100%; height: 100%; background: #eee; border: 2px dashed #ccc; border-radius: 10px; box-sizing: border-box; }
-      .answer-card { width: 100%; height: 100%; background: #fff; border: 2px solid #ddd; border-radius: 10px; padding: 5px; font-size: 0.95rem; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 0 #ccc; box-sizing: border-box; user-select: none; word-break: break-all; overflow: hidden; white-space: pre-wrap; }
+      
+      /* スマホ版：基本文字サイズを0.85remにして読みやすく調整 */
+      .answer-card { width: 100%; height: 100%; background: #fff; border: 2px solid #ddd; border-radius: 10px; padding: 6px; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 0 #ccc; box-sizing: border-box; user-select: none; word-break: break-all; overflow: hidden; white-space: pre-wrap; line-height: 1.3; text-align: center; }
 
+      /* スマホ版：文字数が多い（18文字以上）とき用の自動縮小スタイル */
+      .answer-card.long-text { font-size: 0.72rem; line-height: 1.2; padding: 4px; }
+
+      /* 〇と×のサイズ・太さを完全に統一 */
       .mark-area {
         position: absolute; top: 0; right: 0; transform: translate(0%, -55%);
-        font-size: 4rem; font-weight: 900; font-family: 'Arial Black', sans-serif; z-index: 10;
+        font-size: 3.5rem; font-weight: 900; font-family: 'Arial Black', sans-serif; z-index: 10;
         text-shadow: 4px 4px 0 #fff, -4px 4px 0 #fff, 4px -4px 0 #fff, -4px -4px 0 #fff, 0 4px 0 #fff, 0 -4px 0 #fff, 4px 0 0 #fff, -4px 0 0 #fff;
       }
-      .mark-correct { color: #f44336; -webkit-text-stroke: 8px #f44336; }
-      .mark-incorrect { color: #2196f3; font-size: 3.5rem; -webkit-text-stroke: 5px #2196f3; }
+      .mark-correct { color: #f44336; -webkit-text-stroke: 5px #f44336; font-size: 3.5rem; }
+      .mark-incorrect { color: #2196f3; -webkit-text-stroke: 5px #2196f3; font-size: 3.5rem; }
 
-      .correct-label { background: #fce4ec; color: #c2185b; font-size: 0.9rem; font-weight: bold; padding: 4px 8px; border-radius: 5px; margin-top: 8px; word-break: break-all; white-space: pre-wrap; line-height: 1.3; }
+      .correct-label { background: #fce4ec; color: #c2185b; font-size: 0.85rem; font-weight: bold; padding: 4px 8px; border-radius: 5px; margin-top: 6px; word-break: break-all; white-space: pre-wrap; line-height: 1.3; width: 100%; box-sizing: border-box; }
       
       .judgement-title { font-size: 2rem; color: #e91e63; margin-bottom: 40px; }
 
@@ -80,17 +91,20 @@
       .final-buttons { display: flex; flex-direction: column; align-items: center; }
       .hint-text { font-size: 0.85rem; color: #c2185b; margin-top: 8px; margin-bottom: 15px; font-weight: bold; }
 
+      /* PC版（横幅が広い画面）では元の1×4の横一列レイアウトに戻す */
       @media (min-width: 768px) {
+        #screen-quiz, #screen-result-detail { justify-content: center; padding-top: 15px; }
         .main-title-logo { max-width: 800px; }
         .rule-box { font-size: 1.6rem; padding: 40px; line-height: 2; }
         .final-title { font-size: 2.8rem; }
         .quiz-header { padding: 25px; }
         #question-text { font-size: 1.4rem; }
+        .drop-area, .answer-pool { grid-template-columns: repeat(4, 1fr); gap: 15px; }
         .member-icon { width: 70px; height: 70px; }
         .member-name { font-size: 0.9rem; }
         .cell-container { height: 130px; }
         .answer-card { font-size: 1.2rem; padding: 10px; }
-        .drop-area, .answer-pool { gap: 15px; }
+        .answer-card.long-text { font-size: 1.1rem; }
       }
     </style>
   </head>
@@ -199,15 +213,11 @@
       let selectedCellIndex = -1;
       const members = ['yuino', 'soera', 'niasu', 'ruuya'];
 
-      // ページ読み込み時にGASからデータを取得する
       window.onload = async function() {
         const btn = document.getElementById('btn-start-loading');
         try {
-          // ?mode=api を付けてアクセスし、JSONデータを受け取る
           const response = await fetch(GAS_URL + '?mode=api');
           allQuizData = await response.json();
-          
-          // 読み込み完了したらボタンを押せるようにする
           btn.innerText = 'あそぶ！';
           btn.classList.remove('disabled');
           btn.onclick = () => showScreen('screen-rule');
@@ -280,7 +290,9 @@
           el.className = 'cell-container';
           if (i === selectedCellIndex) el.classList.add('selected-cell');
           if (cells[i] !== null) {
-            el.innerHTML = `<div class="answer-card">${cells[i]}</div>`;
+            // 文字数が18文字を超えていたら自動的に「long-text」クラスを付与してフォントを小さくする
+            const isLong = cells[i].length > 18 ? ' long-text' : '';
+            el.innerHTML = `<div class="answer-card${isLong}">${cells[i]}</div>`;
           } else {
             el.innerHTML = `<div class="empty-slot"></div>`;
           }
@@ -327,16 +339,21 @@
           const slot = document.createElement('div');
           slot.className = 'member-column';
           slot.style.position = 'relative';
+          
+          // 結果表示側も文字数制限による文字縮小（long-text）に対応
+          const isLong = userAnsText.length > 18 ? ' long-text' : '';
+          const isCorrectLong = correctAnsText.length > 18 ? ' style="font-size:0.72rem;"' : '';
+          
           slot.innerHTML = `
             <div class="member-icon ${m}"></div>
             <div class="member-name">${getName(m)}</div>
             <div class="cell-container" style="pointer-events:none;">
-              <div class="answer-card" style="box-shadow:none;">${userAnsText}</div>
+              <div class="answer-card${isLong}" style="box-shadow:none;">${userAnsText}</div>
             </div>
             <div class="mark-area ${isCorrect ? 'mark-correct' : 'mark-incorrect'}">
               ${isCorrect ? '○' : '×'}
             </div>
-            ${!isCorrect ? `<div class="correct-label">正解：\n${correctAnsText}</div>` : ''}
+            ${!isCorrect ? `<div class="correct-label"${isCorrectLong}>正解：\n${correctAnsText}</div>` : ''}
           `;
           resultsArea.appendChild(slot);
         });
