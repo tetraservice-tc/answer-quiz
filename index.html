@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
   <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <title>アンサー推測クイズ</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta property="og:title" content="アンサー推測クイズ">
     <meta property="og:description" content="メンバーの回答を推測して並べ替えよう！">
     <meta property="og:image" content="https://drive.google.com/thumbnail?id=1rC2byTUCZSHyE8zj__BFZUlRXrJ9kh_9&sz=w1000">
@@ -22,89 +22,91 @@
 
       body { margin: 0; padding: 0; font-family: 'Kosugi Maru', sans-serif; background-color: var(--color-bg); color: var(--color-text); display: flex; justify-content: center; overflow-x: hidden; }
       #game-container { width: 100%; max-width: 900px; min-height: 100vh; position: relative; margin: 0 auto; }
-      .screen { display: none; width: 100%; min-height: 100vh; padding: 15px; box-sizing: border-box; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+      .screen { display: none; width: 100%; min-height: 100vh; padding: 10px; box-sizing: border-box; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
       .screen.active { display: flex; }
 
-      /* スマホ版：お題とマスを上側に寄せてスペースを確保 */
-      #screen-quiz, #screen-result-detail { justify-content: flex-start; padding-top: 5px; }
+      #screen-quiz, #screen-result-detail { justify-content: flex-start; padding-top: 5px; padding-bottom: 40px; }
 
-      .main-title-logo { width: 95%; max-width: 600px; height: auto; margin-bottom: 20px; }
-      .character-lineup { display: flex; gap: 10px; margin-bottom: 30px; }
+      .main-title-logo { width: 90%; max-width: 500px; height: auto; margin-bottom: 10px; }
+      .character-lineup { display: flex; gap: 8px; margin-bottom: 20px; }
 
-      .rule-box { font-size: 1.2rem; line-height: 1.8; background: #fff; padding: 20px; border-radius: 15px; border: 2px solid #f8bbd0; margin-bottom: 25px; width: 95%; max-width: 700px; box-sizing: border-box; box-shadow: 0 4px 0 #fce4ec; }
+      .rule-box { font-size: 1.1rem; line-height: 1.6; background: #fff; padding: 15px 5px; border-radius: 15px; border: 2px solid #f8bbd0; margin-bottom: 15px; width: 95%; max-width: 700px; box-sizing: border-box; box-shadow: 0 4px 0 #fce4ec; container-type: inline-size; }
       .rule-box ruby { ruby-position: over; ruby-align: center; margin: 0 2px; }
       .rule-box .ruby-8 { margin: 0; }
+      
+      .rule-line { white-space: nowrap; font-size: min(1.2rem, 4.1vw); font-size: min(1.2rem, 4.2cqi); }
+      .magenta-text { color: #e91e63; }
 
-      .section-title { font-size: 1.8rem; margin-bottom: 15px; }
-      .final-title { font-size: 2.2rem; margin-bottom: 15px; color: #e91e63; }
+      .section-title { font-size: 1.6rem; margin-bottom: 10px; }
+      .final-title { font-size: 2rem; margin-bottom: 10px; color: #e91e63; }
 
-      .btn-main { background: #e91e63; color: white; border: none; padding: 15px 40px; font-size: 1.2rem; border-radius: 50px; cursor: pointer; box-shadow: 0 6px 0 #c2185b; transition: all 0.1s; font-family: inherit; margin-top: 15px; }
-      .btn-play { font-size: 1.5rem; padding: 20px 60px; }
+      .btn-main { background: #e91e63; color: white; border: none; padding: 12px 30px; font-size: 1.1rem; border-radius: 50px; cursor: pointer; box-shadow: 0 5px 0 #c2185b; transition: all 0.1s; font-family: inherit; margin-top: 10px; }
+      .btn-play { font-size: 1.3rem; padding: 15px 50px; }
       .btn-main:active { transform: translateY(4px); box-shadow: 0 2px 0 #c2185b; }
-      .btn-main.disabled { background: #ccc; box-shadow: 0 6px 0 #999; pointer-events: none; }
-      .btn-x { background: #000; color: white; border-radius: 50px; padding: 12px 24px; margin-top: 10px; border: none; cursor: pointer; font-size: 1.1rem; }
+      .btn-main.disabled { background: #ccc; box-shadow: 0 5px 0 #999; pointer-events: none; }
+      .btn-x { background: #000; color: white; border-radius: 50px; padding: 10px 20px; margin-top: 5px; border: none; cursor: pointer; font-size: 1rem; }
 
-      .quiz-header { width: 100%; background: #fff; padding: 12px; border-radius: 20px; border: 3px solid #f8bbd0; margin-bottom: 15px; box-sizing: border-box; }
-      #quiz-number { display: block; font-weight: bold; color: #e91e63; margin-bottom: 3px; }
-      #question-text { font-size: 1.1rem; font-weight: bold; }
+      #btn-confirm, #btn-next { margin-bottom: 30px; }
 
-      /* スマホ版：縦2×横2（2列）にして横幅を広げる */
-      .drop-area, .answer-pool { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; margin-bottom: 20px; }
+      .quiz-header { width: 100%; background: #fff; padding: 8px; border-radius: 15px; border: 2px solid #f8bbd0; margin-bottom: 10px; box-sizing: border-box; }
+      #quiz-number { display: block; font-weight: bold; color: #e91e63; margin-bottom: 2px; font-size: 0.9rem; }
+      #question-text { font-size: 1rem; font-weight: bold; line-height: 1.2; }
+
+      .drop-area { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 8px; width: 100%; margin-bottom: 15px; }
+      .answer-pool { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; width: 100%; margin-bottom: 10px; }
+      .answer-pool-label { font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; }
+
       .member-column { display: flex; flex-direction: column; align-items: center; position: relative; width: 100%; }
-      .member-icon { width: 50px; height: 50px; border-radius: 50%; background-size: cover; background-position: center; border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+      .member-icon { width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
       .yuino { background-image: url('https://drive.google.com/thumbnail?id=1RlBdz1ettyfon8lFjMn3w_I0ZorA11dh&sz=w200'); background-color: var(--color-yuino); }
       .soera { background-image: url('https://drive.google.com/thumbnail?id=1Wr7o3-quTE2wz4nfT2PxTncAAwNYx-wz&sz=w200'); background-color: var(--color-soera); }
       .niasu { background-image: url('https://drive.google.com/thumbnail?id=18ZpK3ycsvLv6Wjk68N3xV91afeJnv3vd&sz=w200'); background-color: var(--color-niasu); }
       .ruuya { background-image: url('https://drive.google.com/thumbnail?id=11PRlk0xPLxQOiILzz3jNFWB7lWdg6EEt&sz=w200'); background-color: var(--color-ruuya); }
-      .member-name { font-size: 0.75rem; font-weight: bold; margin: 3px 0; }
+      .member-name { font-size: 0.6rem; font-weight: bold; margin: 2px 0; }
 
-      /* スマホ版：マスの高さを少し広げる（110px） */
-      .cell-container { width: 100%; height: 110px; border-radius: 10px; cursor: pointer; position: relative; box-sizing: border-box; transition: transform 0.1s; }
+      .cell-container { width: 100%; height: 85px; border-radius: 10px; cursor: pointer; position: relative; box-sizing: border-box; transition: transform 0.1s; }
       .cell-container.selected-cell { outline: 4px solid #e91e63; transform: scale(1.05); z-index: 2; }
       .empty-slot { width: 100%; height: 100%; background: #eee; border: 2px dashed #ccc; border-radius: 10px; box-sizing: border-box; }
       
-      /* スマホ版：基本文字サイズを0.85remにして読みやすく調整 */
-      .answer-card { width: 100%; height: 100%; background: #fff; border: 2px solid #ddd; border-radius: 10px; padding: 6px; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 0 #ccc; box-sizing: border-box; user-select: none; word-break: break-all; overflow: hidden; white-space: pre-wrap; line-height: 1.3; text-align: center; }
+      .answer-card { width: 100%; height: 100%; background: #fff; border: 2px solid #ddd; border-radius: 10px; padding: 4px; font-size: 0.75rem; line-height: 1.1; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 0 #ccc; box-sizing: border-box; user-select: none; word-break: break-all; overflow: hidden; white-space: pre-wrap; }
 
-      /* スマホ版：文字数が多い（18文字以上）とき用の自動縮小スタイル */
-      .answer-card.long-text { font-size: 0.72rem; line-height: 1.2; padding: 4px; }
-
-      /* 〇と×のサイズ・太さを完全に統一 */
       .mark-area {
-        position: absolute; top: 0; right: 0; transform: translate(0%, -55%);
-        font-size: 3.5rem; font-weight: 900; font-family: 'Arial Black', sans-serif; z-index: 10;
-        text-shadow: 4px 4px 0 #fff, -4px 4px 0 #fff, 4px -4px 0 #fff, -4px -4px 0 #fff, 0 4px 0 #fff, 0 -4px 0 #fff, 4px 0 0 #fff, -4px 0 0 #fff;
+        position: absolute; top: 0; right: 0; transform: translate(15%, -35%);
+        width: 40px; height: 40px; z-index: 10;
+        filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 3px #fff);
       }
-      .mark-correct { color: #f44336; -webkit-text-stroke: 5px #f44336; font-size: 3.5rem; }
-      .mark-incorrect { color: #2196f3; -webkit-text-stroke: 5px #2196f3; font-size: 3.5rem; }
+      .svg-mark { width: 100%; height: 100%; }
 
-      .correct-label { background: #fce4ec; color: #c2185b; font-size: 0.85rem; font-weight: bold; padding: 4px 8px; border-radius: 5px; margin-top: 6px; word-break: break-all; white-space: pre-wrap; line-height: 1.3; width: 100%; box-sizing: border-box; }
+      .correct-label { background: #fce4ec; color: #c2185b; font-size: 0.75rem; font-weight: bold; padding: 4px 6px; border-radius: 5px; margin-top: 6px; word-break: break-all; white-space: pre-wrap; line-height: 1.2; box-sizing: border-box; width: 100%; }
       
-      .judgement-title { font-size: 2rem; color: #e91e63; margin-bottom: 40px; }
+      .judgement-title { font-size: 1.6rem; color: #e91e63; margin-bottom: 25px; }
 
-      .score-box { margin: 20px 0; letter-spacing: -2px; }
-      .score-main { font-size: 5rem; font-weight: bold; color: #ff0000; text-shadow: 3px 3px 0 #fff, -3px 3px 0 #fff, 3px -3px 0 #fff, -3px -3px 0 #fff, 5px 5px 0px #000; }
-      .score-sub { font-size: 1.5rem; font-weight: bold; color: #554433; }
+      .score-box { margin: 10px 0; letter-spacing: -2px; }
+      .score-main { font-size: 4rem; font-weight: bold; color: #ff0000; text-shadow: 3px 3px 0 #fff, -3px 3px 0 #fff, 3px -3px 0 #fff, -3px -3px 0 #fff, 5px 5px 0px #000; }
+      .score-sub { font-size: 1.2rem; font-weight: bold; color: #554433; }
 
-      .final-comment { font-size: 1.2rem; font-weight: bold; line-height: 1.5; margin-bottom: 20px; padding: 0 10px; }
+      .final-comment { font-size: 1.1rem; font-weight: bold; line-height: 1.4; margin-bottom: 10px; padding: 0 10px; }
       .final-comment ruby { ruby-position: over; }
-      .final-buttons { display: flex; flex-direction: column; align-items: center; }
-      .hint-text { font-size: 0.85rem; color: #c2185b; margin-top: 8px; margin-bottom: 15px; font-weight: bold; }
+      .hint-text { font-size: 0.8rem; color: #c2185b; margin-top: 20px; margin-bottom: 15px; font-weight: bold; }
 
-      /* PC版（横幅が広い画面）では元の1×4の横一列レイアウトに戻す */
       @media (min-width: 768px) {
-        #screen-quiz, #screen-result-detail { justify-content: center; padding-top: 15px; }
-        .main-title-logo { max-width: 800px; }
-        .rule-box { font-size: 1.6rem; padding: 40px; line-height: 2; }
+        .main-title-logo { max-width: 700px; margin-bottom: 20px; }
+        .rule-box { font-size: 1.6rem; padding: 40px 10px; line-height: 2; }
+        .rule-line { font-size: min(1.8rem, 4.2cqi); }
         .final-title { font-size: 2.8rem; }
-        .quiz-header { padding: 25px; }
+        .quiz-header { padding: 25px; margin-bottom: 20px; }
         #question-text { font-size: 1.4rem; }
-        .drop-area, .answer-pool { grid-template-columns: repeat(4, 1fr); gap: 15px; }
         .member-icon { width: 70px; height: 70px; }
         .member-name { font-size: 0.9rem; }
         .cell-container { height: 130px; }
         .answer-card { font-size: 1.2rem; padding: 10px; }
-        .answer-card.long-text { font-size: 1.1rem; }
+        .drop-area { grid-template-columns: repeat(4, 1fr); gap: 20px 15px; margin-bottom: 25px; }
+        .answer-pool { grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
+        #screen-quiz, #screen-result-detail { justify-content: center; padding-top: 15px; }
+        .mark-area { width: 70px; height: 70px; transform: translate(10%, -40%); }
+        .judgement-title { font-size: 2rem; margin-bottom: 30px; }
+        .correct-label { font-size: 1rem; margin-top: 10px; }
+        .score-main { font-size: 5rem; }
       }
     </style>
   </head>
@@ -123,13 +125,13 @@
       </div>
 
       <div id="screen-rule" class="screen">
-        <h2 class="section-title">ルールせつめい</h2>
+        <h2 class="section-title">ルール説明</h2>
         <div class="rule-box">
-          メンバーに出された質問への回答が<br>
-          バラバラに表示されるよ！<br>
-          「誰がどの回答をしたか」を正しく並び替えてね。<br><br>
-          全部で４問！全問正解で“<ruby class="ruby-8">８点<rt>（８周年だから）</rt></ruby>”目指そう！<br>
-          問題は入れ替わるので何度でも挑戦してね！
+          <div class="rule-line">メンバーに出された質問への回答が</div>
+          <div class="rule-line">バラバラに表示されるよ！</div>
+          <div class="rule-line" style="margin-bottom: 1em;">「誰がどの回答をしたか」を正しく並び替えてね。</div>
+          <div class="rule-line" style="margin-bottom: 1em;">全部で４問！全問正解で<span class="magenta-text">“<ruby class="ruby-8">８点<rt>（８周年だから）</rt></ruby>”</span>を目指そう！</div>
+          <div class="rule-line">問題は入れ替わるので何度でも挑戦してね！</div>
         </div>
         <button class="btn-main" onclick="startGame()">ゲームスタート！</button>
       </div>
@@ -202,7 +204,7 @@
       // ==========================================
       // ★ここにGASのURLを貼り付けてください★
       // ==========================================
-      const GAS_URL = 'https://script.google.com/macros/s/AKfycbxweLFJbVTPuP1EaQVx8sjwJJ4dJDH7HH4kdOr5U_zUiaRnwgRALusVFvlqIwyZbu8k/exec';
+      const GAS_URL = 'https://script.google.com/macros/s/AKfycbwr1qyNIh4C-IUh7VeNLqNEBw9slAc3RQyQEBzcLmYRps7fzoLjiYfcSmnUtpCPagM/exec';
       
       let allQuizData = [];
       let currentQuestionIndex = 0;
@@ -213,6 +215,7 @@
       let selectedCellIndex = -1;
       const members = ['yuino', 'soera', 'niasu', 'ruuya'];
 
+      // ページ読み込み時にGASからデータを取得
       window.onload = async function() {
         const btn = document.getElementById('btn-start-loading');
         try {
@@ -227,6 +230,14 @@
         }
       };
 
+      function getMarkSVG(isCorrect) {
+        if (isCorrect) {
+          return `<svg class="svg-mark" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="#f44336" stroke-width="14" /></svg>`;
+        } else {
+          return `<svg class="svg-mark" viewBox="0 0 100 100"><path d="M20,20 L80,80 M80,20 L20,80" fill="none" stroke="#2196f3" stroke-width="16" stroke-linecap="round" /></svg>`;
+        }
+      }
+
       function formatScore(num) {
         let str = String(num);
         if (str.includes('.')) {
@@ -237,35 +248,23 @@
       }
 
       function toFullWidth(str) {
-        return str.replace(/[0-9]/g, function(s) {
-          return String.fromCharCode(s.charCodeAt(0) + 0xFEE0);
-        });
+        return str.replace(/[0-9]/g, s => String.fromCharCode(s.charCodeAt(0) + 0xFEE0));
       }
 
       function showScreen(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
+        window.scrollTo(0, 0);
       }
 
       function startGame() {
         score = 0;
         currentQuestionIndex = 0;
-        let unusedIndices = [];
-        for (let i = 0; i < allQuizData.length; i++) {
-          if (!usedQuestions.includes(i)) unusedIndices.push(i);
-        }
+        let unusedIndices = allQuizData.map((_, i) => i).filter(i => !usedQuestions.includes(i));
+        if (unusedIndices.length < 4) unusedIndices = allQuizData.map((_, i) => i);
         unusedIndices.sort(() => Math.random() - 0.5);
-        let selectedIndices = [];
-        if (unusedIndices.length >= 4) {
-          selectedIndices = unusedIndices.slice(0, 4);
-        } else {
-          selectedIndices = [...unusedIndices];
-          let usedIndices = [...usedQuestions].sort(() => Math.random() - 0.5);
-          selectedIndices = selectedIndices.concat(usedIndices.slice(0, 4 - selectedIndices.length));
-        }
-        selectedIndices.forEach(idx => {
-          if (!usedQuestions.includes(idx)) usedQuestions.push(idx);
-        });
+        let selectedIndices = unusedIndices.slice(0, 4);
+        selectedIndices.forEach(idx => { if (!usedQuestions.includes(idx)) usedQuestions.push(idx); });
         selectedQuizSet = selectedIndices.map(idx => allQuizData[idx]);
         loadQuestion();
         showScreen('screen-quiz');
@@ -289,13 +288,7 @@
           el.innerHTML = '';
           el.className = 'cell-container';
           if (i === selectedCellIndex) el.classList.add('selected-cell');
-          if (cells[i] !== null) {
-            // 文字数が18文字を超えていたら自動的に「long-text」クラスを付与してフォントを小さくする
-            const isLong = cells[i].length > 18 ? ' long-text' : '';
-            el.innerHTML = `<div class="answer-card${isLong}">${cells[i]}</div>`;
-          } else {
-            el.innerHTML = `<div class="empty-slot"></div>`;
-          }
+          el.innerHTML = cells[i] !== null ? `<div class="answer-card">${cells[i]}</div>` : `<div class="empty-slot"></div>`;
           el.onclick = () => handleCellClick(i);
         }
       }
@@ -305,14 +298,12 @@
           if (cells[index] === null) return;
           selectedCellIndex = index;
         } else {
-          if (selectedCellIndex === index) {
-            selectedCellIndex = -1;
-          } else {
+          if (selectedCellIndex !== index) {
             const temp = cells[selectedCellIndex];
             cells[selectedCellIndex] = cells[index];
             cells[index] = temp;
-            selectedCellIndex = -1;
           }
+          selectedCellIndex = -1;
         }
         renderCells();
         checkConfirmButton();
@@ -338,26 +329,16 @@
           if (isCorrect) roundCorrectCount++;
           const slot = document.createElement('div');
           slot.className = 'member-column';
-          slot.style.position = 'relative';
-          
-          // 結果表示側も文字数制限による文字縮小（long-text）に対応
-          const isLong = userAnsText.length > 18 ? ' long-text' : '';
-          const isCorrectLong = correctAnsText.length > 18 ? ' style="font-size:0.72rem;"' : '';
-          
           slot.innerHTML = `
             <div class="member-icon ${m}"></div>
             <div class="member-name">${getName(m)}</div>
-            <div class="cell-container" style="pointer-events:none;">
-              <div class="answer-card${isLong}" style="box-shadow:none;">${userAnsText}</div>
-            </div>
-            <div class="mark-area ${isCorrect ? 'mark-correct' : 'mark-incorrect'}">
-              ${isCorrect ? '○' : '×'}
-            </div>
-            ${!isCorrect ? `<div class="correct-label"${isCorrectLong}>正解：\n${correctAnsText}</div>` : ''}
+            <div class="cell-container" style="pointer-events:none;"><div class="answer-card" style="box-shadow:none;">${userAnsText}</div></div>
+            <div class="mark-area">${getMarkSVG(isCorrect)}</div>
+            ${!isCorrect ? `<div class="correct-label">正解：\n${correctAnsText}</div>` : ''}
           `;
           resultsArea.appendChild(slot);
         });
-        let judgeText = roundCorrectCount === 4 ? "せいかい！！" : roundCorrectCount === 0 ? "ざんねん！！ ぽくなかったですか！？" : `おしい！${roundCorrectCount}箇所せいかい！`;
+        let judgeText = roundCorrectCount === 4 ? "正解！！すごい！" : roundCorrectCount === 0 ? "残念…！！" : `おしい！${toFullWidth(String(roundCorrectCount))}箇所正解！`;
         document.getElementById('judgement-text').innerText = judgeText;
         score += (roundCorrectCount * 0.5);
         showScreen('screen-result-detail');
@@ -370,12 +351,8 @@
 
       function nextQuestion() {
         currentQuestionIndex++;
-        if (currentQuestionIndex < 4) {
-          loadQuestion();
-          showScreen('screen-quiz');
-        } else {
-          showFinalResult();
-        }
+        if (currentQuestionIndex < 4) { loadQuestion(); showScreen('screen-quiz'); }
+        else { showFinalResult(); }
       }
 
       function showFinalResult() {
@@ -392,9 +369,8 @@
       }
 
       function shareX() {
-        const text = encodeURIComponent(`彩虹色調（テトラクロマシー）の8周年記念！\nアンサー推測クイズで【${score}/8点】を獲得しました！\n\n#彩虹色調８周年\n${window.location.href}`);
-        const url = `https://twitter.com/intent/tweet?text=${text}`;
-        window.open(url, '_blank');
+        const text = encodeURIComponent(`彩虹色調（テトラクロマシー）の8周年記念！\nアンサー推測クイズで【${score}/8点】を獲得しました！\n\n#彩虹色調８周年\n${window.location.href.split('?')[0]}`);
+        window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
       }
 
       function resetGame() {
