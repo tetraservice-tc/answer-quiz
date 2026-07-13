@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta property="og:title" content="アンサー推測クイズ">
     <meta property="og:description" content="メンバーの回答を推測して並べ替えよう！">
-    <meta property="og:image" content="https://drive.google.com/thumbnail?id=1rC2byTUCZSHyE8zj__BFZUlRXrJ9kh_9&sz=w1000">
+    <meta property="og:image" content="https://tetraservice-tc.github.io/answer-quiz/logo.png">
     <meta name="twitter:card" content="summary_large_image">
     <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
     
@@ -58,10 +58,13 @@
 
       .member-column { display: flex; flex-direction: column; align-items: center; position: relative; width: 100%; }
       .member-icon { width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-      .yuino { background-image: url('https://drive.google.com/thumbnail?id=1RlBdz1ettyfon8lFjMn3w_I0ZorA11dh&sz=w200'); background-color: var(--color-yuino); }
-      .soera { background-image: url('https://drive.google.com/thumbnail?id=1Wr7o3-quTE2wz4nfT2PxTncAAwNYx-wz&sz=w200'); background-color: var(--color-soera); }
-      .niasu { background-image: url('https://drive.google.com/thumbnail?id=18ZpK3ycsvLv6Wjk68N3xV91afeJnv3vd&sz=w200'); background-color: var(--color-niasu); }
-      .ruuya { background-image: url('https://drive.google.com/thumbnail?id=11PRlk0xPLxQOiILzz3jNFWB7lWdg6EEt&sz=w200'); background-color: var(--color-ruuya); }
+      
+      /* 画像の読み込み先をGitHub上のファイルに変更しました */
+      .yuino { background-image: url('./yuino.png'); background-color: var(--color-yuino); }
+      .soera { background-image: url('./soera.png'); background-color: var(--color-soera); }
+      .niasu { background-image: url('./niasu.png'); background-color: var(--color-niasu); }
+      .ruuya { background-image: url('./ruuya.png'); background-color: var(--color-ruuya); }
+      
       .member-name { font-size: 0.6rem; font-weight: bold; margin: 2px 0; }
 
       .cell-container { width: 100%; height: 85px; border-radius: 10px; cursor: pointer; position: relative; box-sizing: border-box; transition: transform 0.1s; }
@@ -114,7 +117,7 @@
     <div id="game-container">
       
       <div id="screen-title" class="screen active">
-        <img src="https://drive.google.com/thumbnail?id=1rC2byTUCZSHyE8zj__BFZUlRXrJ9kh_9&sz=w1000" class="main-title-logo" alt="アンサー推測クイズ">
+        <img src="./logo.png" class="main-title-logo" alt="アンサー推測クイズ">
         <div class="character-lineup">
           <div class="ch-mini yuino"></div>
           <div class="ch-mini soera"></div>
@@ -130,7 +133,7 @@
           <div class="rule-line">メンバーに出された質問への回答が</div>
           <div class="rule-line">バラバラに表示されるよ！</div>
           <div class="rule-line" style="margin-bottom: 1em;">「誰がどの回答をしたか」を正しく並び替えてね。</div>
-          <div class="rule-line" style="margin-bottom: 1em;">全部で４問！全問正解で<span class="magenta-text">“<ruby class="ruby-8">８点<rt>（８周年だから）</rt></ruby>”</span>を目指そう！</div>
+          <div class="rule-line" style="margin-bottom: 1em;">全部で４問！全問正解で<span class="magenta-text">“<ruby class="ruby-8">８点<rt>（８周年だから）</rt></ruby>”</span>目指そう！</div>
           <div class="rule-line">問題は入れ替わるので何度でも挑戦してね！</div>
         </div>
         <button class="btn-main" onclick="startGame()">ゲームスタート！</button>
@@ -201,9 +204,6 @@
     </div>
 
     <script>
-      // ==========================================
-      // ★ここにGASのURLを貼り付けてください★
-      // ==========================================
       const GAS_URL = 'https://script.google.com/macros/s/AKfycbwr1qyNIh4C-IUh7VeNLqNEBw9slAc3RQyQEBzcLmYRps7fzoLjiYfcSmnUtpCPagM/exec';
       
       let allQuizData = [];
@@ -215,7 +215,6 @@
       let selectedCellIndex = -1;
       const members = ['yuino', 'soera', 'niasu', 'ruuya'];
 
-      // ページ読み込み時にGASからデータを取得
       window.onload = async function() {
         const btn = document.getElementById('btn-start-loading');
         try {
