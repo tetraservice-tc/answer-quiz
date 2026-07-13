@@ -132,7 +132,7 @@
           <div class="rule-line">メンバーに出された質問への回答が</div>
           <div class="rule-line">バラバラに表示されるよ！</div>
           <div class="rule-line" style="margin-bottom: 1em;">「誰がどの回答をしたか」を正しく並び替えてね。</div>
-          <div class="rule-line" style="margin-bottom: 1em;">全部で４問！全問正解で<span class="magenta-text">“<ruby class="ruby-8">８点<rt>（８周年だから）</rt></ruby>”</span>目指そう！</div>
+          <div class="rule-line" style="margin-bottom: 1em;">全部で４問！全問正解で<span class="magenta-text">“<ruby class="ruby-8">８点<rt>（８周年だから）</rt></ruby>”</span>を目指そう！</div>
           <div class="rule-line">問題は入れ替わるので何度でも挑戦してね！</div>
         </div>
         <button class="btn-main" onclick="startGame()">ゲームスタート！</button>
@@ -189,7 +189,7 @@
         <h2 class="section-title final-title">【最終結果】</h2>
         <div class="score-box">
           <span class="score-main"><span id="final-score">0</span>点</span>
-          <span class="score-sub">/ 8点</span>
+          <span class="score-sub"> / 8点</span>
         </div>
         <div class="final-comment" id="final-comment"></div>
         
@@ -356,7 +356,7 @@
       function showFinalResult() {
         document.getElementById('final-score').innerText = formatScore(score);
         let comment = "";
-        if (score === 8) comment = "すごすぎる！！ <ruby>彩虹色調<rt>テトラクロマシー</rt></ruby>の造詣が深すぎます…！！";
+        if (score === 8) comment = "すごすぎる！！ もうあなたが<ruby>彩虹色調<rt>テトラクロマシー</rt></ruby>です…！！";
         else if (score >= 7) comment = "すごい！！<ruby>彩虹色調<rt>テトラクロマシー</rt></ruby>をよくわかってます！";
         else if (score >= 4) comment = "まあまあ理解できていますね！！でも再チャレンジしてほしい！";
         else comment = "メンバーのイメージと違いすぎましたかね？（笑）次はもっといい点数が取れるかも？！";
